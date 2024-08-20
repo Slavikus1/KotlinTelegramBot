@@ -7,15 +7,20 @@ data class Word(
 )
 
 fun main() {
-    val dictionary: MutableList<Word> = mutableListOf()
-    val wordsFile = File("words.txt")
-    wordsFile.createNewFile()
-    val lines: List<String> = wordsFile.readLines()
-    for (line in lines) {
-        val line = line.split("|")
-        val word = Word(original = line[0], translate = line[1])
-        dictionary.add(word)
+    fun loadDictionary(): List<Word> {
+        val dictionary: MutableList<Word> = mutableListOf()
+        val wordsFile = File("words.txt")
+        wordsFile.createNewFile()
+        val lines: List<String> = wordsFile.readLines()
+        for (line in lines) {
+            val line = line.split("|")
+            val word = Word(original = line[0], translate = line[1])
+            dictionary.add(word)
+        }
+        return dictionary
     }
+
+    val dictionary = loadDictionary()
 
     while (true) {
         val learnedCounter = dictionary.filter { it.learnedNumber >= 3 }
