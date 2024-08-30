@@ -7,19 +7,6 @@ data class Word(
 )
 
 fun main() {
-    fun loadDictionary(): List<Word> {
-        val dictionary: MutableList<Word> = mutableListOf()
-        val wordsFile = File("words.txt")
-        wordsFile.createNewFile()
-        val lines: List<String> = wordsFile.readLines()
-        for (line in lines) {
-            val line = line.split("|")
-            val word = Word(original = line[0], translate = line[1])
-            dictionary.add(word)
-        }
-        return dictionary
-    }
-
     val dictionary = loadDictionary()
 
     while (true) {
@@ -38,4 +25,17 @@ fun main() {
             else -> println("Необходимо выбрать один из трех пунктов: 1, 2 или 0!")
         }
     }
+}
+
+fun loadDictionary(): List<Word> {
+    val dictionary: MutableList<Word> = mutableListOf()
+    val wordsFile = File("words.txt")
+    wordsFile.createNewFile()
+    val lines: List<String> = wordsFile.readLines()
+    for (line in lines) {
+        val line = line.split("|")
+        val word = Word(original = line[0], translate = line[1])
+        dictionary.add(word)
+    }
+    return dictionary
 }
