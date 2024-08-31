@@ -8,7 +8,6 @@ data class Word(
 
 fun main() {
     val dictionary = loadDictionary()
-
     while (true) {
         val learnedCounter = dictionary.filter { it.learnedNumber >= 3 }
         println("Меню:\n1 - Учить слова\n2 - Статистика\n0 - Выход")
