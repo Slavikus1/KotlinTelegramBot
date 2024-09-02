@@ -15,16 +15,16 @@ fun main() {
         when (input) {
             "1" -> {
                 val unlearnedNumber = dictionary.filter { it.learnedNumber < 3 }
-                while (true) {
-                    if (unlearnedNumber.isEmpty()) {
-                        println("Вы выучили все слова.")
-                        break
-                    }
+                while (unlearnedNumber.isNotEmpty()) {
                     val shuffledUnlearned = unlearnedNumber.take(4).shuffled()
                     val shuffledTranslates = shuffledUnlearned.map { it.translate }
                     val hiddenWord = shuffledUnlearned.random()
                     println("Как переводится слово ${hiddenWord.original}?")
                     println(shuffledTranslates)
+                    break //этот брейк для остановки цикла во время тестирования
+                }
+                if (unlearnedNumber.isEmpty()) {
+                    println("Вы выучили все слова.")
                     break
                 }
             }
