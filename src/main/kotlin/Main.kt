@@ -38,7 +38,6 @@ fun main() {
                     } else println("Неверно!")
                 }
                 continue
-
             }
 
             "2" -> {
