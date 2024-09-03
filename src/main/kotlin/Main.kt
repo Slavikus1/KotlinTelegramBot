@@ -38,9 +38,9 @@ fun main() {
                     } else println("Неверно!")
                 }
                 continue
-
+              
             }
-
+            
             "2" -> {
                 val learnedPercent = (learnedCounter.size * 100) / dictionary.size
                 println("Количество выученных слов: ${learnedCounter.size}")
