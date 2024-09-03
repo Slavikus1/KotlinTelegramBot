@@ -3,17 +3,16 @@ import java.io.File
 data class Word(
     val original: String,
     val translate: String,
-    val learnedNumber: Int = 0,
+    var learnedNumber: Int = 0,
 )
 
 fun main() {
-    var dictionary = loadDictionary()
     while (true) {
-        val learnedCounter = dictionary.filter { it.learnedNumber >= 3 }
+        var dictionary = loadDictionary()
         println("Меню:\n1 - Учить слова\n2 - Статистика\n0 - Выход")
         when (readln()) {
             "1" -> {
-                val unlearnedNumber = dictionary.filter { it.learnedNumber < 3 }
+                var unlearnedNumber = dictionary.filter { it.learnedNumber < 3 }
                 if (unlearnedNumber.isEmpty()) {
                     println("Вы выучили все слова.")
                 }
@@ -33,8 +32,9 @@ fun main() {
                     }
                     if (userAnswer == (indexOfHiddenWord + 1)) {
                         println("Верно!")
-                        hiddenWord.learnedNumber + 1
+                        hiddenWord.learnedNumber += 1
                         dictionary = saveDictionary(hiddenWord, dictionary)
+                        unlearnedNumber = dictionary.filter { it.learnedNumber < 3 }
                     } else println("Неверно!")
                 }
                 continue
@@ -42,6 +42,7 @@ fun main() {
             }
 
             "2" -> {
+                val learnedCounter = dictionary.filter { it.learnedNumber >= 3 }
                 val learnedPercent = (learnedCounter.size * 100) / dictionary.size
                 println("Количество выученных слов: ${learnedCounter.size}")
                 println("Выучено ${learnedCounter.size} из ${dictionary.size} | $learnedPercent%")
@@ -67,5 +68,7 @@ fun loadDictionary(): List<Word> {
 }
 
 fun saveDictionary(word: Word, dictionary: List<Word>): List<Word> {
-    return dictionary.map { it -> if (word.original == it.original) word else it }
+    val newDictionary = dictionary.map { it -> if (word.original == it.original) word else it }
+    val file = File("words.txt")
+    return newDictionary
 }
