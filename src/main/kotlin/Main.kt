@@ -13,7 +13,22 @@ fun main() {
         println("Меню:\n1 - Учить слова\n2 - Статистика\n0 - Выход")
         val input = readln()
         when (input) {
-            "1" -> println("Вы нажали 'учить слова'")
+            "1" -> {
+                val unlearnedNumber = dictionary.filter { it.learnedNumber < 3 }
+                while (unlearnedNumber.isNotEmpty()) {
+                    val shuffledUnlearned = unlearnedNumber.take(4).shuffled()
+                    val shuffledTranslates = shuffledUnlearned.map { it.translate }
+                    val hiddenWord = shuffledUnlearned.random()
+                    println("Как переводится слово ${hiddenWord.original}?")
+                    println(shuffledTranslates)
+                    break //этот брейк для остановки цикла во время тестирования
+                }
+                if (unlearnedNumber.isEmpty()) {
+                    println("Вы выучили все слова.")
+                    break
+                }
+            }
+
             "2" -> {
                 val learnedPercent = (learnedCounter.size * 100) / dictionary.size
                 println("Количество выученных слов: ${learnedCounter.size}")
