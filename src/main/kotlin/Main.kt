@@ -39,7 +39,6 @@ fun main() {
                 }
                 continue
             }
-
             "2" -> {
                 val learnedCounter = dictionary.filter { it.learnedNumber >= 3 }
                 val learnedPercent = (learnedCounter.size * 100) / dictionary.size
