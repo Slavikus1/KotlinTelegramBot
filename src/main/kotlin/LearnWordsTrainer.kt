@@ -29,10 +29,19 @@ class LearnWordsTrainer(
     fun getNextQuestion(): Question? {
         val notLearnedList = dictionary.filter { it.correctAnswersCount < rightAnswerGoal }
         if (notLearnedList.isEmpty()) return null
-        val questionWords = notLearnedList.take(numberOfTranslateVariants).shuffled()
-        val correctAnswer = questionWords.random()
+        val questionWords = if (notLearnedList.size < numberOfTranslateVariants) {
+            val learnedList = dictionary.filter { it.correctAnswersCount >= rightAnswerGoal }.shuffled()
+            notLearnedList.shuffled()
+                .take(numberOfTranslateVariants) + learnedList.take(numberOfTranslateVariants - notLearnedList.size)
+        } else {
+            notLearnedList.shuffled().take(numberOfTranslateVariants)
+        }.shuffled()
 
-        question = Question(questionWords, correctAnswer)
+        val correctAnswer = questionWords.random()
+        question = Question(
+            variants = questionWords,
+            correctAnswer = correctAnswer
+        )
         return question
     }
 
