@@ -1,3 +1,5 @@
+import java.lang.Exception
+
 data class Word(
     val questionWord: String,
     val translate: String,
@@ -12,7 +14,12 @@ fun Question.asConsoleString(): String {
 }
 
 fun main() {
-    val trainer = LearnWordsTrainer()
+    val trainer = try {
+        LearnWordsTrainer()
+    } catch (e: Exception){
+        println("Невозможно загрузить словарь")
+        return
+    }
 
     while (true) {
         println("Меню: 1 - Учить слова, 2 - Статистика, 0 - Выход")
