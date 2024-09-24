@@ -5,6 +5,7 @@ import java.net.http.HttpResponse
 
 fun main(args: Array<String>) {
     val botToken = args[0]
+
     val urlGetMe = "https://api.telegram.org/bot$botToken/getMe"
 
     val urlGetUpdates = "https://api.telegram.org/bot$botToken/getUpdates"
