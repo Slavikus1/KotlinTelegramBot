@@ -28,6 +28,5 @@ fun getUpdates(botToken: String, updateId: Int): String {
     val client = HttpClient.newBuilder().build()
     val requestUpdates = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
     val response = client.send(requestUpdates, HttpResponse.BodyHandlers.ofString())
-
     return response.body()
 }
