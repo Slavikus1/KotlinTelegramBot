@@ -11,12 +11,15 @@ fun main(args: Array<String>) {
         val updates: String = getUpdates(botToken, updateId)
         println(updates)
 
-        val startUpdateId = updates.lastIndexOf("update_id")
-        val endUpdateId = updates.lastIndexOf(",\n\"message\"")
-        if (startUpdateId == -1 || endUpdateId == -1) continue
-        val updateIdString = updates.substring(startUpdateId + 11, endUpdateId)
+        val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
+        val matchResult = updateIdRegex.find(updates)
+        val groups = matchResult?.groups
+        val updateIdInt = groups?.get(1)?.value?.toInt()
+        println(updateIdInt)
 
-        updateId = updateIdString.toInt() + 1
+        if (updateIdInt != null) {
+            updateId = updateIdInt.toInt() + 1
+        }
     }
 }
 
