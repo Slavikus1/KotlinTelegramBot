@@ -3,15 +3,14 @@ import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 
-fun main(args: Array<String>) {
-    val botToken = args[0]
+fun main() {
     var updateId: Int? = 0
     var chatId: Long?
     val telegramBotService = TelegramBotService()
 
     while (true) {
         Thread.sleep(2000)
-        val updates: String = telegramBotService.getUpdates(botToken, updateId)
+        val updates: String = telegramBotService.getUpdates(updateId)
         println(updates)
 
         val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
@@ -33,7 +32,7 @@ fun main(args: Array<String>) {
         val helloRequest = "Hello"
         if (userText?.toLowerCase()?.capitalize() == helloRequest) {
             if (chatId != null) {
-                telegramBotService.sendMessage(botToken, chatId, helloRequest)
+                telegramBotService.sendMessage(chatId, helloRequest)
             }
         }
     }
