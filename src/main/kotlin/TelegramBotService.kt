@@ -7,8 +7,9 @@ const val TELEGRAM_DOMAIN = "https://api.telegram.org/bot"
 
 class TelegramBotService(
     private val botToken: String = "7540450751:AAGmgUThMhOmQ2T60f9KXbn4WFxw3oIA2Ts",
-    private val httpClient: HttpClient = HttpClient.newBuilder().build(),
 ) {
+    private val httpClient: HttpClient = HttpClient.newBuilder().build()
+
     fun getUpdates(updateId: Int?): String {
         val urlGetUpdates = "$TELEGRAM_DOMAIN$botToken/getUpdates?offset=$updateId"
         val requestUpdates = HttpRequest.newBuilder().uri(URI.create(urlGetUpdates)).build()
