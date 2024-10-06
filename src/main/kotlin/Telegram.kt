@@ -1,39 +1,46 @@
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import java.lang.Exception
 
 fun main() {
-    var updateId: Int? = 0
+    var lastUpdateId: Int? = 0
     var chatId: Long?
     val telegramBotService = TelegramBotService()
 
+    val trainer = try {
+        LearnWordsTrainer()
+    } catch (e: Exception) {
+        println("Невозможно загрузить словарь")
+        return
+    }
+
+    val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
+    val textRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
+    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
+    val chatIdRegex: Regex = "\"chat\":\\{\"id\":\\s*(\\d+)".toRegex()
+    val commandsToReact = listOf("menu", "/start")
+    val helloRequest = "Hello"
+
     while (true) {
         Thread.sleep(2000)
-        val updates: String = telegramBotService.getUpdates(updateId)
+        val updates: String = telegramBotService.getUpdates(lastUpdateId)
         println(updates)
 
-        val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
-        val matchResultId: MatchResult? = updateIdRegex.find(updates)
-        val groupsId = matchResultId?.groups
-        val updateIdInt = groupsId?.get(1)?.value?.toInt()?.plus(1)
-        updateId = updateIdInt
+        val updateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+        lastUpdateId = updateId + 1
+        chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong()
+        val data = dataRegex.find(updates)?.groups?.get(1)?.value
+        val text = textRegex.find(updates)?.groups?.get(1)?.value
 
-        val chatIdRegex: Regex = "\"chat\":\\{\"id\":\\s*(\\d+)".toRegex()
-        val matchResultChat: MatchResult? = chatIdRegex.find(updates)
-        val groupsChat = matchResultChat?.groups
-        chatId = groupsChat?.get(1)?.value?.toLong()
 
-        val textRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
-        val matchResultText: MatchResult? = textRegex.find(updates)
-        val groupsText = matchResultText?.groups
-        val userText = groupsText?.get(1)?.value
+        if (text?.toLowerCase()?.capitalize() == helloRequest && chatId != null) {
+            telegramBotService.sendMessage(chatId, helloRequest)
+        }
 
-        val helloRequest = "Hello"
-        if (userText?.toLowerCase()?.capitalize() == helloRequest) {
-            if (chatId != null) {
-                telegramBotService.sendMessage(chatId, helloRequest)
-            }
+        if (text?.toLowerCase() in commandsToReact && chatId != null) {
+            telegramBotService.sendMenu(chatId, helloRequest)
+        }
+
+        if (data?.toLowerCase() == STATISTICS_CLICKED && chatId != null) {
+            telegramBotService.sendMessage(chatId, "Выучено 10 слов из 10 | 100%")
         }
     }
 }
