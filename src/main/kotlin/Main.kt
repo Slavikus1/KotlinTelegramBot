@@ -1,11 +1,5 @@
 import java.lang.Exception
 
-data class Word(
-    val questionWord: String,
-    val translate: String,
-    var correctAnswersCount: Int = 0
-)
-
 fun Question.asConsoleString(): String {
     val variants = this.variants
         .mapIndexed { index: Int, word: Word -> "${index + 1} - ${word.translate}" }
@@ -16,7 +10,7 @@ fun Question.asConsoleString(): String {
 fun main() {
     val trainer = try {
         LearnWordsTrainer()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         println("Невозможно загрузить словарь")
         return
     }
