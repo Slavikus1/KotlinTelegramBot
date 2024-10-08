@@ -12,6 +12,8 @@ fun main() {
         return
     }
 
+    val statistic: Statistics = trainer.getStatistics()
+
     val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
     val textRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
     val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
@@ -40,7 +42,10 @@ fun main() {
         }
 
         if (data?.toLowerCase() == STATISTICS_CLICKED && chatId != null) {
-            telegramBotService.sendMessage(chatId, "Выучено 10 слов из 10 | 100%")
+            telegramBotService.sendMessage(
+                chatId,
+                "Выучено ${statistic.learned} из ${statistic.total} | ${statistic.percent}%"
+            )
         }
     }
 }
