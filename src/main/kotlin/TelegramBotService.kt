@@ -23,6 +23,7 @@ class TelegramBotService(
         return response.body()
     }
 
+
     fun sendMessage(chatId: Long, text: String): String {
         val encoded = URLEncoder.encode(
             text,
