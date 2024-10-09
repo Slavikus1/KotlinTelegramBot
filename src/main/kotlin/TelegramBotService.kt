@@ -81,7 +81,7 @@ class TelegramBotService(
         val inlineKeyboard = """
             {
                 "chat_id": $chatId,
-                "text": $text,
+                "text": "$text",
                 "reply_markup": {
                     "inline_keyboard": [
                         [
