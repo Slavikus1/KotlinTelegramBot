@@ -47,6 +47,10 @@ fun main() {
                 "Выучено ${statistic.learned} из ${statistic.total} | ${statistic.percent}%"
             )
         }
+
+        if (data?.toLowerCase() == LEARN_WORDS_CLICKED && chatId != null) {
+            telegramBotService.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+        }
     }
 }
 
