@@ -22,7 +22,7 @@ class LearnWordsTrainer(
     private val fileName: String = "words.txt",
     private val numberOfTranslateVariants: Int = 4,
 ) {
-    private var question: Question? = null
+    var question: Question? = null
     private val dictionary = loadDictionary()
 
     fun getStatistics(): Statistics {
