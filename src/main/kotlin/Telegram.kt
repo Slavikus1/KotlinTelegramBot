@@ -1,4 +1,5 @@
 import java.lang.Exception
+import java.util.*
 
 fun main() {
     var lastUpdateId: Int? = 0
@@ -32,27 +33,29 @@ fun main() {
         val data = dataRegex.find(updates)?.groups?.get(1)?.value
         val text = textRegex.find(updates)?.groups?.get(1)?.value
 
+        if (chatId == null) continue
 
-        if (text?.toLowerCase()?.capitalize() == helloRequest && chatId != null) {
+
+        if (text?.lowercase(Locale.getDefault())?.capitalize() == helloRequest) {
             telegramBotService.sendMessage(chatId, helloRequest)
         }
 
-        if (text?.toLowerCase() in commandsToReact && chatId != null) {
+        if (text?.lowercase(Locale.getDefault()) in commandsToReact) {
             telegramBotService.sendMenu(chatId, helloRequest)
         }
 
-        if (data?.toLowerCase() == STATISTICS_CLICKED && chatId != null) {
+        if (data?.lowercase(Locale.getDefault()) == STATISTICS_CLICKED) {
             telegramBotService.sendMessage(
                 chatId,
                 "Выучено ${statistic.learned} из ${statistic.total} | ${statistic.percent}%"
             )
         }
 
-        if (data?.toLowerCase() == LEARN_WORDS_CLICKED && chatId != null) {
+        if (data?.lowercase(Locale.getDefault()) == LEARN_WORDS_CLICKED) {
             telegramBotService.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
         }
 
-        if (data?.toLowerCase()?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true && chatId != null) {
+        if (data?.lowercase(Locale.getDefault())?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
             val userAnswerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if (trainer.checkAnswer(userAnswerIndex)) {
                 telegramBotService.sendMessage(chatId, "Правильно!")
