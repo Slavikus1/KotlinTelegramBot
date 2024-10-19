@@ -12,6 +12,7 @@ const val TELEGRAM_DOMAIN = "https://api.telegram.org/bot"
 const val LEARN_WORDS_CLICKED = "learn_words_clicked"
 const val STATISTICS_CLICKED = "statistics_clicked"
 const val ALL_WORDS_LEARNED = "Вы выучили все слова в базе"
+const val RESET_CLICKED = "reset_clicked"
 
 class TelegramBotService(
     private val botToken: String = "7540450751:AAGmgUThMhOmQ2T60f9KXbn4WFxw3oIA2Ts"
@@ -52,7 +53,8 @@ class TelegramBotService(
                     listOf(
                         InlineKeyboard(text = "Изучать слова", callbackData = LEARN_WORDS_CLICKED),
                         InlineKeyboard(text = "Статистика", callbackData = STATISTICS_CLICKED),
-                    )
+                    ),
+                    listOf(InlineKeyboard(text = "Сбросить прогресс", callbackData = RESET_CLICKED))
                 )
             )
         )
