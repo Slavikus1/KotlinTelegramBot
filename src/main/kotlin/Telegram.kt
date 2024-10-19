@@ -1,9 +1,73 @@
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import java.lang.Exception
 import java.util.*
 
+@Serializable
+data class Message(
+    @SerialName("text")
+    val text: String,
+    @SerialName("chat")
+    val chat: Chat,
+)
+
+@Serializable
+data class CallbackQuery(
+    @SerialName("data")
+    val data: String,
+    @SerialName("message")
+    val message: Message? = null
+)
+
+@Serializable
+data class Chat(
+    @SerialName("id")
+    val id: Long,
+)
+
+@Serializable
+data class SendMessageRequest(
+    @SerialName("chat_id")
+    val chatId: Long,
+    @SerialName("text")
+    val text: String,
+    @SerialName("reply_markup")
+    val replyMarkup: ReplyMarkup? = null,
+)
+
+@Serializable
+data class ReplyMarkup(
+    @SerialName("inline_keyboard")
+    val inlineKeyboard: List<List<InlineKeyboard>>,
+)
+
+@Serializable
+data class InlineKeyboard(
+    @SerialName("text")
+    val text: String,
+    @SerialName("callback_data")
+    val callbackData: String,
+)
+
+@Serializable
+data class Update(
+    @SerialName("update_id")
+    val updateId: Long,
+    @SerialName("message")
+    val message: Message? = null,
+    @SerialName("callback_query")
+    val callbackQuery: CallbackQuery? = null,
+)
+
+@Serializable
+data class Response(
+    @SerialName("result")
+    val result: List<Update>,
+)
+
 fun main() {
-    var lastUpdateId: Int? = 0
-    var chatId: Long?
+    var lastUpdateId = 0L
     val telegramBotService = TelegramBotService()
 
     val trainer = try {
@@ -13,10 +77,10 @@ fun main() {
         return
     }
 
-    val updateIdRegex: Regex = "\"update_id\":\\s*(\\d+)".toRegex()
-    val textRegex: Regex = "\"text\":\"(.+?)\"".toRegex()
-    val dataRegex: Regex = "\"data\":\"(.+?)\"".toRegex()
-    val chatIdRegex: Regex = "\"chat\":\\{\"id\":\\s*(\\d+)".toRegex()
+    val json = Json {
+        ignoreUnknownKeys = true
+    }
+
     val commandsToReact = listOf("menu", "/start")
     val helloRequest = "Hello"
 
@@ -24,48 +88,51 @@ fun main() {
         val statistic: Statistics = trainer.getStatistics()
 
         Thread.sleep(2000)
-        val updates: String = telegramBotService.getUpdates(lastUpdateId)
-        println(updates)
-
-        val updateId = updateIdRegex.find(updates)?.groups?.get(1)?.value?.toIntOrNull() ?: continue
+        val responseString: String = telegramBotService.getUpdates(lastUpdateId)
+        val response: Response = json.decodeFromString(responseString)
+        println(responseString)
+        val updates = response.result
+        val firstUpdate = updates.firstOrNull() ?: continue
+        val updateId = firstUpdate.updateId
         lastUpdateId = updateId + 1
-        chatId = chatIdRegex.find(updates)?.groups?.get(1)?.value?.toLong()
-        val data = dataRegex.find(updates)?.groups?.get(1)?.value
-        val text = textRegex.find(updates)?.groups?.get(1)?.value
+
+        val message = firstUpdate.message?.text
+        val chatId = firstUpdate.message?.chat?.id ?: firstUpdate.callbackQuery?.message?.chat?.id
+        val data = firstUpdate.callbackQuery?.data
 
         if (chatId == null) continue
-
-
-        if (text?.lowercase(Locale.getDefault())?.capitalize() == helloRequest) {
-            telegramBotService.sendMessage(chatId, helloRequest)
+        if (message?.lowercase(Locale.getDefault())?.capitalize() == helloRequest) {
+            telegramBotService.sendMessage(json, chatId, helloRequest)
         }
 
-        if (text?.lowercase(Locale.getDefault()) in commandsToReact) {
-            telegramBotService.sendMenu(chatId, helloRequest)
+        if (message?.lowercase(Locale.getDefault()) in commandsToReact) {
+            telegramBotService.sendMenu(json, chatId, helloRequest)
         }
 
         if (data?.lowercase(Locale.getDefault()) == STATISTICS_CLICKED) {
             telegramBotService.sendMessage(
+                json,
                 chatId,
                 "Выучено ${statistic.learned} из ${statistic.total} | ${statistic.percent}%"
             )
         }
 
         if (data?.lowercase(Locale.getDefault()) == LEARN_WORDS_CLICKED) {
-            telegramBotService.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+            telegramBotService.checkNextQuestionAndSend(json, trainer, telegramBotService, chatId)
         }
 
         if (data?.lowercase(Locale.getDefault())?.startsWith(CALLBACK_DATA_ANSWER_PREFIX) == true) {
             val userAnswerIndex = data.substringAfter(CALLBACK_DATA_ANSWER_PREFIX).toInt()
             if (trainer.checkAnswer(userAnswerIndex)) {
-                telegramBotService.sendMessage(chatId, "Правильно!")
+                telegramBotService.sendMessage(json, chatId, "Правильно!")
             } else {
                 telegramBotService.sendMessage(
+                    json,
                     chatId,
                     "Неправильно! ${trainer.question?.correctAnswer?.questionWord} это ${trainer.question?.correctAnswer?.translate}"
                 )
             }
-            telegramBotService.checkNextQuestionAndSend(trainer, telegramBotService, chatId)
+            telegramBotService.checkNextQuestionAndSend(json, trainer, telegramBotService, chatId)
         }
     }
 }
