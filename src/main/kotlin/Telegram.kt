@@ -1,4 +1,3 @@
-import kotlinx.serialization.json.Json
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -12,10 +11,12 @@ fun main(args: Array<String>) {
         Thread.sleep(2000)
         val response: Response = telegramBotService.getUpdates(lastUpdateId) ?: continue
         println(response)
-        if (response.result.isEmpty()) continue
-        val sortedUpdates = response.result.sortedBy { it.updateId }
-        sortedUpdates.forEach { handleUpdate(it, trainers, telegramBotService) }
-        lastUpdateId = sortedUpdates.last().updateId + 1
+        if (response.result?.isEmpty() == true) continue
+        val sortedUpdates = response.result?.sortedBy { it.updateId }
+        sortedUpdates?.forEach { handleUpdate(it, trainers, telegramBotService) }
+        if (sortedUpdates != null) {
+            lastUpdateId = sortedUpdates.last().updateId + 1
+        }
     }
 }
 
@@ -31,7 +32,8 @@ fun handleUpdate(
     val helloRequest = "Hello"
     val trainer = trainers.getOrPut(chatId) { LearnWordsTrainer(fileName = "$chatId.txt") }
 
-    if (message?.lowercase(Locale.getDefault())?.capitalize() == helloRequest) {
+    if (message?.lowercase(Locale.getDefault())
+            ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } == helloRequest) {
         service.sendMessage(chatId, helloRequest)
     }
 

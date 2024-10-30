@@ -24,7 +24,9 @@ class TelegramBotService(
         val result: Result<HttpResponse<String>> =
             runCatching { httpClient.send(requestUpdates, HttpResponse.BodyHandlers.ofString()) }
         return if (result.isSuccess) {
-            result.getOrNull()?.body()?.let { json.decodeFromString(it) }
+            val body = result.getOrNull()?.body()
+            println(body)
+            body?.let { json.decodeFromString(it) }
         } else {
             println("Error: ${result.exceptionOrNull()?.message ?: "Some error"}")
             null
@@ -90,9 +92,9 @@ class TelegramBotService(
             chatId = chatId,
             text = question.correctAnswer.questionWord,
             replyMarkup = ReplyMarkup(
-                listOf(question.variants.mapIndexed { index, word ->
-                    InlineKeyboard(text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index")
-                })
+                question.variants.mapIndexed { index, word ->
+                    listOf(InlineKeyboard(text = word.translate, callbackData = "$CALLBACK_DATA_ANSWER_PREFIX$index"))
+                }
             )
         )
         val requestBodyString = json.encodeToString(requestBody)
