@@ -21,8 +21,6 @@ fun main() {
             1 -> {
                 while (true) {
                     val question = trainer.getNextQuestion()
-
-
                     if (question == null) {
                         println("Все слова выучены")
                         break
