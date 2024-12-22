@@ -26,7 +26,7 @@ jobs:
         run: ls build/libs
 
       - name: Rename file
-        run: mv KotlinTelegramBot-1.0-SNAPSHOT-all.jar
+        run: mv KotlinTelegramBot-1.0-SNAPSHOT-all.jar bot.jar
 
       - name: Deploy jar to VPS
         uses: appleboy/scp-action@master
